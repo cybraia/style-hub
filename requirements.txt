@@ -1,0 +1,6 @@
+Flask==2.3.3
+requests==2.31.0
+debugpy
+pymongo
+python-dotenv
+toolbox-langchain==0.5.2

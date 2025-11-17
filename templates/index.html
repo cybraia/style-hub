@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Catalog - Polyglot Persistence</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f4f9; }
+        
+        /* --- Application Container --- */
+        .app-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        h1 { text-align: center; color: #333; margin-bottom: 20px; font-weight: 600; }
+
+        /* --- Tab Navigation Styling --- */
+        .tab-nav-container { 
+            display: flex; 
+            justify-content: center; /* Center the entire tab group */
+            border-bottom: 2px solid #ccc; 
+            margin-bottom: 0; 
+        }
+        .tab-button {
+            padding: 12px 25px; 
+            border: none; 
+            background-color: #e9e9e9; 
+            color: #333;
+            cursor: pointer; 
+            border-radius: 8px 8px 0 0; 
+            margin-right: 8px; 
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tab-button.active {
+            background-color: #ffffff;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            border-bottom: 2px solid white; /* Visual trick to show tab is "connected" */
+            transform: translateY(1px); /* Slight lift */
+        }
+        
+        /* --- Content Containers --- */
+        .tab-content { 
+            padding: 30px 0; 
+            background-color: white; 
+            border: 1px solid #ccc; 
+            border-top: none; 
+            border-radius: 0 0 8px 8px;
+            min-height: 500px;
+        }
+        
+        /* --- Product Grid --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 0 30px;
+        }
+        .product-card {
+            background-color: white; padding: 15px; border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer;
+        }
+        .product-card:hover { transform: translateY(-7px); box-shadow: 0 12px 20px rgba(0,0,0,0.2); }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
+        .product-card h3 { margin-top: 0; font-size: 1.1em; color: #007bff; height: 3em; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
+        .product-card .price { font-size: 1.5em; font-weight: bold; color: #28a745; margin-top: 10px; }
+
+        /* --- Analytics & ETL Styling --- */
+        .analytics-container { padding: 30px; border-radius: 10px; margin: 0 30px 30px; }
+        .analytics-bar { display: flex; align-items: center; padding: 10px; border-radius: 6px; background-color: #f0f0f0; margin-bottom: 8px; box-sizing: border-box; }
+        .etl-box { text-align: center; margin: 30px; padding: 25px; border: 2px dashed #007bff; border-radius: 10px; background-color: #e9f5ff; }
+        .etl-box button { box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3); }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h1 style="text-align: center; color: #333;">☁️ E-commerce Polyglot Architecture Demo</h1>
+
+        <div class="tab-nav-container">
+            <button class="tab-button active" onclick="showTab('products-view', this)" data-view="products-view">
+                🛒 Product Catalog
+            </button>
+            <button class="tab-button" onclick="showTab('etl-view', this)" data-view="etl-view">
+                💾 ETL & Top Reports
+            </button>
+            <a href="/virtual-tryon" class="tab-button" style="text-decoration: none; display: inline-flex; align-items: center;">
+                👗 Virtual Try-On
+            </a>
+        </div>
+
+        <div id="products-view" class="tab-content" style="display: block;">
+            
+            <div id="product-grid" class="product-grid">
+                <p id="loading-message" style="grid-column: 1 / -1; text-align: center;">Loading products from Flask API...</p> 
+            </div>
+        </div>
+
+        <div id="etl-view" class="tab-content" style="display: none;">
+            
+            <div class="etl-box">
+                <h2 style="margin-top: 0;">Data Intelligence Pipeline</h2>
+                <p>Transfer live user interaction summaries from MongoDB to BigQuery for analysis.</p>
+                <button id="run-etl-btn" style="padding: 12px 30px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.2s;">
+                    Run ETL Job (MongoDB → BigQuery)
+                </button>
+                <p id="etl-status" style="margin-top: 15px; font-weight: bold; color: #555;">Status: Waiting for trigger.</p>
+            </div>
+
+            <div class="analytics-container" style="border: 1px solid #cc0000; background-color: #fff0f0;">
+                <h2 style="color: #cc0000; text-align: center;">🔥 Top 5 Most Viewed Products (BigQuery Analytics)</h2>
+                <p style="text-align: center; margin-bottom: 15px;">Data is sourced from BigQuery's <code>product_interaction_summary</code> table.</p>
+                
+                <div id="top-5-chart-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                    <p id="top-5-status">Click 'Refresh' or switch tabs to fetch the latest rankings.</p>
+                </div>
+                
+                <button id="fetch-top-5-btn" style="margin-top: 15px; padding: 10px 25px; background-color: #cc0000; color: white; border: none; border-radius: 6px; cursor: pointer; display: block; margin: 0 auto;">
+                    Refresh Top 5 Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const API_URL = '/products'; 
+        
+        // --- DOM Elements ---
+        const productGrid = document.getElementById('product-grid');
+        const loadingMessage = document.getElementById('loading-message');
+        const etlButton = document.getElementById('run-etl-btn');
+        const etlStatus = document.getElementById('etl-status');
+        const fetchTop5Button = document.getElementById('fetch-top-5-btn');
+        const top5ChartContainer = document.getElementById('top-5-chart-container');
+        const top5Status = document.getElementById('top-5-status');
+        
+        // --- CORE FUNCTIONS ---
+        
+        async function trackUserInteraction(productId, userId) {
+            try {
+                await fetch('/track/view', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, product_id: productId }),
+                });
+                console.log(`Tracking event recorded for product ${productId}.`);
+            } catch (error) {
+                console.error("Tracking failed:", error);
+            }
+        }
+
+        async function showProductDetail(productId) {
+            try {
+                const response = await fetch(`/products/${productId}`);
+                const product = await response.json();
+                
+                if (!response.ok || product.error) {
+                    alert(`Error loading details: ${product.message || 'Product not found.'}`);
+                    return;
+                }
+                
+                let specsHtml = '<ul>';
+                if (product.specifications) {
+                    for (const key in product.specifications) {
+                        specsHtml += `<li><strong>${key.replace('_', ' ')}:</strong> ${product.specifications[key]}</li>`;
+                    }
+                } else {
+                    specsHtml += '<li>No flexible specifications available in MongoDB.</li>';
+                }
+                specsHtml += '</ul>';
+
+                alert(`--- Product Details ---\nName: ${product.name}\nPrice: $${parseFloat(product.price).toFixed(2)}\nStock: ${product.stock}\n\nSpecs:\n${specsHtml.replace(/<[^>]*>/g, '').trim()}\n\nCheck console for full polyglot data.`);
+                console.log("Full Polyglot Product Data:", product);
+            } catch (error) {
+                console.error("Product detail fetch error:", error);
+                alert("Failed to load full product details.");
+            }
+        }
+
+        async function fetchProducts() {
+            if (!productGrid || !loadingMessage) { return; }
+            
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) { throw new Error(`HTTP error! Status: ${response.status}`); }
+                const products = await response.json();
+
+                if (products.error) { throw new Error(products.error); }
+
+                loadingMessage.style.display = 'none';
+                productGrid.innerHTML = ''; 
+
+                products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.setAttribute('data-id', product.product_id); 
+                    
+                    card.innerHTML = `
+                        <img 
+                            src="${product.image_url}" 
+                            alt="${product.name}" 
+                            onerror="this.onerror=null; this.src='${product.fallback_url}'" 
+                        >
+                        <h3>${product.name}</h3>
+                        <p>SKU: ${product.sku}</p>
+                        <p class="price">$${parseFloat(product.price).toFixed(2)}</p>
+                    `;
+                    
+                    card.onclick = () => {
+                         const userId = 'a0a0a0a0-0000-0000-0000-000000000001'; 
+                         trackUserInteraction(product.product_id, userId);
+                         showProductDetail(product.product_id);
+                    };
+                    
+                    productGrid.appendChild(card);
+                });
+
+            } catch (error) {
+                loadingMessage.style.display = 'block'; 
+                loadingMessage.textContent = `Error loading catalog: ${error.message}. Is the Flask API running?`;
+                console.error("Error fetching products:", error);
+            }
+        }
+        
+        async function runEtl() {
+            etlStatus.textContent = 'Processing... Extracting MongoDB interactions and merging to BigQuery...';
+            etlButton.disabled = true;
+
+            try {
+                const API_URL = '/etl/run';
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    etlStatus.textContent = `SUCCESS: ETL Complete! Processed ${result.products_processed} products.`;
+                    etlStatus.style.color = 'green';
+                    // Automatically refresh Top 5 report after a successful ETL run
+                    fetchTop5Analytics(); 
+                } else {
+                    etlStatus.textContent = `ERROR: ETL Failed. Check console for details.`;
+                    etlStatus.style.color = 'red';
+                    console.error("ETL Error:", result.error, result.details);
+                }
+
+            } catch (error) {
+                etlStatus.textContent = `Network Error: Could not connect to Flask server.`;
+                etlStatus.style.color = 'red';
+                console.error("Network Error during ETL:", error);
+            } finally {
+                etlButton.disabled = false;
+            }
+        }
+        
+        async function fetchTop5Analytics() {
+            top5Status.textContent = 'Fetching real-time analytics from BigQuery...';
+            fetchTop5Button.disabled = true;
+
+            try {
+                const API_URL = '/analytics/top5';
+                const response = await fetch(API_URL);
+                const products = await response.json();
+
+                if (products.error) { throw new Error(products.error); }
+                
+                top5ChartContainer.innerHTML = ''; 
+
+                if (products.length === 0) {
+                    top5ChartContainer.innerHTML = '<p>No view data available for ranking. Run the ETL job first!</p>';
+                    return;
+                }
+
+                products.forEach((product, index) => {
+                    const rank = index + 1;
+                    const bar = document.createElement('div');
+                    
+                    const widthPercentage = (product.total_views / products[0].total_views) * 100;
+
+                    bar.className = 'analytics-bar';
+                    bar.innerHTML = `
+                        <span style="font-size: 1.2em; font-weight: bold; width: 40px; color: #cc0000;">#${rank}</span>
+                        <span style="flex-grow: 1;">${product.name} (${product.category || 'N/A'})</span>
+                        <div style="background-color: #cc0000; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; width: ${widthPercentage}%;">
+                            ${product.total_views} Views
+                        </div>
+                    `;
+                    top5ChartContainer.appendChild(bar);
+                });
+                
+                top5Status.textContent = `Report generated: Top ${products.length} products displayed.`;
+
+            } catch (error) {
+                top5Status.textContent = `Analytics Error: ${error.message}. Ensure BQ is configured and ETL was run.`;
+                console.error("Analytics Error:", error);
+            } finally {
+                fetchTop5Button.disabled = false;
+            }
+        }
+
+
+        // --- Initialization and Tab Logic ---
+        function showTab(viewId, clickedButton) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(viewId).style.display = 'block';
+
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedButton.classList.add('active');
+            
+            // Optimization: Load Top 5 Report when the ETL tab is opened for the first time
+            if (viewId === 'etl-view' && !top5ChartContainer.dataset.loaded) {
+                fetchTop5Analytics();
+                top5ChartContainer.dataset.loaded = 'true';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up all event listeners for the analytics buttons
+            etlButton.addEventListener('click', runEtl);
+            fetchTop5Button.addEventListener('click', fetchTop5Analytics);
+            
+            // Set the default tab to 'products-view'
+            const defaultTabButton = document.querySelector('.tab-button[data-view="products-view"]');
+            if (defaultTabButton) {
+                showTab('products-view', defaultTabButton); 
+            }
+            
+            // Start fetching products immediately on load
+            fetchProducts();
+        });
+    </script>
+</body>
+</html>
