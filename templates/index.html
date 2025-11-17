@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-commerce Catalog - Polyglot Persistence</title>
+    <title>Style Hub</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f4f9; }
         
@@ -52,39 +52,155 @@
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            padding: 0 30px;
+            gap: 20px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f5ff 100%);
         }
         .product-card {
-            background-color: white; padding: 15px; border-radius: 10px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer;
+            background: linear-gradient(135deg, #ffffff 0%, #f9faff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            border: 1px solid rgba(0, 123, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
-        .product-card:hover { transform: translateY(-7px); box-shadow: 0 12px 20px rgba(0,0,0,0.2); }
-        .product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
-        .product-card h3 { margin-top: 0; font-size: 1.1em; color: #007bff; height: 3em; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
-        .product-card .price { font-size: 1.5em; font-weight: bold; color: #28a745; margin-top: 10px; }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        .product-card:hover::before { left: 100%; }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 123, 255, 0.2);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: transform 0.4s ease;
+        }
+        .product-card:hover img { transform: scale(1.05); }
+        .product-card h3 {
+            margin-top: 0;
+            font-size: 1.15em;
+            color: #0056b3;
+            height: 3em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+        .product-card p {
+            margin: 10px 0;
+            color: #666;
+            font-size: 0.95em;
+        }
+        .product-card .price {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #00aa00;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
         /* --- Analytics & ETL Styling --- */
-        .analytics-container { padding: 30px; border-radius: 10px; margin: 0 30px 30px; }
-        .analytics-bar { display: flex; align-items: center; padding: 10px; border-radius: 6px; background-color: #f0f0f0; margin-bottom: 8px; box-sizing: border-box; }
-        .etl-box { text-align: center; margin: 30px; padding: 25px; border: 2px dashed #007bff; border-radius: 10px; background-color: #e9f5ff; }
-        .etl-box button { box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3); }
+        .analytics-container {
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 30px 30px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%);
+            border-left: 5px solid #cc0000;
+        }
+        .analytics-bar {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: white;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ffe0e0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(204, 0, 0, 0.05);
+        }
+        .analytics-bar:hover {
+            box-shadow: 0 4px 12px rgba(204, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+        .etl-box {
+            text-align: center;
+            margin: 30px;
+            padding: 35px;
+            border: 2px solid #007bff;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #e9f5ff 0%, #f0f8ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .etl-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 123, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .etl-box h2 {
+            margin-top: 0;
+            color: #0056b3;
+            font-size: 1.5em;
+            position: relative;
+            z-index: 1;
+        }
+        .etl-box p {
+            color: #333;
+            position: relative;
+            z-index: 1;
+            margin: 15px 0;
+        }
+        .etl-box button {
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .etl-box button:hover {
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.4);
+            transform: translateY(-2px);
+        }
 
     </style>
 </head>
 <body>
     <div class="app-container">
-        <h1 style="text-align: center; color: #333;">☁️ E-commerce Polyglot Architecture Demo</h1>
+        <h1 style="text-align: center; color: #333;">Style Hub</h1>
 
         <div class="tab-nav-container">
             <button class="tab-button active" onclick="showTab('products-view', this)" data-view="products-view">
-                🛒 Product Catalog
+                Browse Products
             </button>
             <button class="tab-button" onclick="showTab('etl-view', this)" data-view="etl-view">
-                💾 ETL & Top Reports
+                Find Top Products
             </button>
             <button class="tab-button" onclick="showTab('virtual-tryon-view', this)" data-view="virtual-tryon-view">
-                👗 Virtual Try-On
+                Virtual Try-On
             </button>
         </div>
 
@@ -100,21 +216,21 @@
             <div class="etl-box">
                 <h2 style="margin-top: 0;">Data Intelligence Pipeline</h2>
                 <p>Transfer live user interaction summaries from MongoDB to BigQuery for analysis.</p>
-                <button id="run-etl-btn" style="padding: 12px 30px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.2s;">
+                <button id="run-etl-btn" style="padding: 14px 35px; font-size: 16px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 600;">
                     Run ETL Job (MongoDB → BigQuery)
                 </button>
                 <p id="etl-status" style="margin-top: 15px; font-weight: bold; color: #555;">Status: Waiting for trigger.</p>
             </div>
 
-            <div class="analytics-container" style="border: 1px solid #cc0000; background-color: #fff0f0;">
-                <h2 style="color: #cc0000; text-align: center;">🔥 Top 5 Most Viewed Products (BigQuery Analytics)</h2>
-                <p style="text-align: center; margin-bottom: 15px;">Data is sourced from BigQuery's <code>product_interaction_summary</code> table.</p>
+            <div class="analytics-container" style="border: none; background-color: transparent;">
+                <h2 style="color: #cc0000; text-align: center; font-size: 1.6em; margin-top: 0;">🔥 Top 5 Most Viewed Products (BigQuery Analytics)</h2>
+                <p style="text-align: center; margin-bottom: 15px; color: #666;">Data is sourced from BigQuery's <code style="background-color: #fff0f0; padding: 3px 8px; border-radius: 4px; color: #cc0000;">product_interaction_summary</code> table.</p>
                 
                 <div id="top-5-chart-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
                     <p id="top-5-status">Click 'Refresh' or switch tabs to fetch the latest rankings.</p>
                 </div>
                 
-                <button id="fetch-top-5-btn" style="margin-top: 15px; padding: 10px 25px; background-color: #cc0000; color: white; border: none; border-radius: 6px; cursor: pointer; display: block; margin: 0 auto;">
+                <button id="fetch-top-5-btn" style="margin-top: 15px; padding: 12px 30px; background: linear-gradient(135deg, #cc0000, #aa0000); color: white; border: none; border-radius: 8px; cursor: pointer; display: block; margin: 15px auto; font-weight: 600; transition: all 0.3s ease;">
                     Refresh Top 5 Report
                 </button>
             </div>
